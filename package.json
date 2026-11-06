@@ -1,0 +1,11 @@
+{
+  "name": "saas-cost-estimator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Compare monthly cloud cost for serverless, containers, and VMs.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  }
+}

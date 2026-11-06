@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SaaS Cost Estimator</title>
+  <meta name="description" content="Compare the monthly cloud bill for serverless, containers, and VMs as a small SaaS grows.">
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>SaaS Cost Estimator</h1>
+      <p class="sub">Estimate the monthly cloud bill for a small SaaS and see where each architecture gets cheaper.</p>
+    </div>
+    <div class="actions">
+      <button type="button" id="share">Copy share link</button>
+      <button type="button" id="reset">Reset</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form id="form" class="panel" autocomplete="off">
+      <fieldset>
+        <legend>Traffic</legend>
+        <label>Monthly active users <output data-for="monthlyActiveUsers"></output>
+          <input type="range" name="monthlyActiveUsers" min="3" max="6" step="0.01" data-log="true">
+        </label>
+        <div class="grid2">
+          <label>Requests per user per day<input type="number" name="requestsPerUserPerDay" min="0" step="1"></label>
+          <label>Avg response size (KB)<input type="number" name="avgResponseKb" min="0" step="1"></label>
+          <label>Peak to average ratio<input type="number" name="peakToAverage" min="1" step="0.5"></label>
+          <label>CDN cache hit ratio<input type="number" name="cdnHitRatio" min="0" max="1" step="0.05"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Compute</legend>
+        <div class="grid2">
+          <label>Function duration (ms)<input type="number" name="avgDurationMs" min="1" step="10"></label>
+          <label>Function memory (MB)<input type="number" name="functionMemoryMb" min="128" step="128"></label>
+          <label>Requests/s per vCPU<input type="number" name="rpsPerVcpu" min="1" step="5"></label>
+          <label>Requests/s per VM<input type="number" name="rpsPerVm" min="1" step="10"></label>
+          <label>Container vCPU<input type="number" name="containerVcpu" min="0.25" step="0.25"></label>
+          <label>Container memory (GB)<input type="number" name="containerMemoryGb" min="0.5" step="0.5"></label>
+          <label>Minimum instances<input type="number" name="minInstances" min="1" step="1"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Data</legend>
+        <div class="grid2">
+          <label>Database base size (GB)<input type="number" name="dbBaseGb" min="0" step="5"></label>
+          <label>DB GB per 1,000 users<input type="number" name="dbGbPerThousandUsers" min="0" step="0.5"></label>
+          <label>Object storage GB per user<input type="number" name="storageGbPerUser" min="0" step="0.01"></label>
+          <label>Log KB per request<input type="number" name="logKbPerRequest" min="0" step="0.5"></label>
+        </div>
+        <label class="check"><input type="checkbox" name="dbHighAvailability"> Multi-AZ database (doubles DB cost)</label>
+      </fieldset>
+      <p class="hint">Prices are rounded on-demand list prices for one US region. They are assumptions for comparison, not a quote. Edit them in <code>src/cost.js</code>.</p>
+    </form>
+
+    <section class="results">
+      <div id="cards" class="cards"></div>
+      <ul id="warnings" class="warnings" aria-live="polite"></ul>
+
+      <div class="panel">
+        <div class="chart-head">
+          <h2>Monthly cost as users grow</h2>
+          <ul class="legend" id="legend"></ul>
+        </div>
+        <div class="chart-wrap">
+          <svg id="chart" role="img" aria-label="Monthly cost by architecture across user counts"></svg>
+          <div id="tooltip" class="tooltip" hidden></div>
+        </div>
+        <p id="crossover" class="hint"></p>
+      </div>
+
+      <div class="panel">
+        <div class="chart-head">
+          <h2>Line items</h2>
+          <div class="tabs" role="tablist" id="tabs"></div>
+        </div>
+        <table class="items">
+          <thead><tr><th>Item</th><th>Detail</th><th class="num">Monthly</th></tr></thead>
+          <tbody id="items"></tbody>
+          <tfoot><tr><th colspan="2">Total</th><th class="num" id="items-total"></th></tr></tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">Runs entirely in your browser. Inputs are stored in the page URL so you can share an estimate.</footer>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
